@@ -1,2 +1,2 @@
 # SR_SHELL
-Shen Yuntian @SHENYT0
+A C program that simulates a shell
