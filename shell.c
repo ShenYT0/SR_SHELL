@@ -18,9 +18,28 @@ void handler(int sig) //SIGINT handler
     }
 }
 */
+void handlerC(int sig)
+{
+	printf("\n");
+	pid_t pid;
+    int status;
+	while (1)
+	{
+		pid = waitpid(-1, &status, WNOHANG|WUNTRACED);
+		if(pid == -1) break;
+	}
+}
+
+void handlerZ(int sig)
+{
+	exit(0);
+}
+
 int main()
 {
 	//Signal(SIGCHLD, handler);
+	Signal(SIGINT, handlerC); // ctrl C
+	Signal(SIGTSTP, handlerZ); // ctrl Z
 
 	while (1) {
 		int status;
@@ -85,6 +104,12 @@ int main()
 			if(strcmp(cmd[0], "quit") == 0) // quit
 			{
 				printf("exit\n");
+				exit(0);
+			}
+
+			if(strcmp(cmd[0], "jobs") == 0) // jobs
+			{
+				// à remplir
 				exit(0);
 			}
 
@@ -159,7 +184,7 @@ int main()
 			Close(tube[i][0]);
     		Close(tube[i][1]);
 		}
-		
+
 		if(l->isBg == 0)
 		{
 			while (1)
