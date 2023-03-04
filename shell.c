@@ -6,21 +6,21 @@
 #include <stdlib.h>
 #include "readcmd.h"
 #include "csapp.h"
-
-void handler(int sig) /* SIGINT handler */
+/*
+void handler(int sig) //SIGINT handler
 {
     pid_t pid;
     int status;
     while (1)
     {
-        pid = waitpid(-1, &status, WNOHANG);
+        pid = waitpid(-1, &status, WNOHANG|WUNTRACED);
         if(pid == -1) break;
     }
 }
-
+*/
 int main()
 {
-	Signal(SIGCHLD, handler);
+	//Signal(SIGCHLD, handler);
 
 	while (1) {
 		int status;
@@ -44,13 +44,18 @@ int main()
 			continue;
 		}
 
+		if(l->isBg) 
+		{
+			printf("background command\n");
+		}
+
 		/*
 		if (l->in) printf("in: %s\n", l->in);
 		if (l->out) printf("out: %s\n", l->out);
 		*/
 
 		/* Display each command of the pipe */
-		/*
+		
 		for (i=0; l->seq[i]!=0; i++) {
 			char **cmd = l->seq[i];
 			printf("seq[%d]: ", i);
@@ -59,7 +64,7 @@ int main()
 			}
 			printf("\n");
 		}
-		*/
+		
 
 		int tube[100][2]; // multitube
 		for ( i = 0; l->seq[i+1]!=0; i++)
@@ -101,7 +106,7 @@ int main()
 				else 
 				{
 					if(l->in){ // maybe read from file
-						fd_in = Open(l->in, O_CREAT|O_RDWR|O_TRUNC,S_IRUSR|S_IWUSR);
+						fd_in = Open(l->in, O_CREAT|O_RDONLY|O_TRUNC,S_IRUSR|S_IWUSR);
 						Dup2(fd_in, 0);
 					}
 				}
@@ -120,7 +125,7 @@ int main()
 				else
 				{
 					if(l->out){ //maybe write to file
-						fd_out = open(l->out, O_CREAT|O_RDWR|O_TRUNC,S_IRUSR|S_IWUSR);
+						fd_out = open(l->out, O_CREAT|O_WRONLY|O_TRUNC,S_IRUSR|S_IWUSR);
 						if(fd_out == -1)
 						{
 							printf("%s: Permission denied\n", l->out);
@@ -154,11 +159,14 @@ int main()
 			Close(tube[i][0]);
     		Close(tube[i][1]);
 		}
-
-		while (1)
+		
+		if(l->isBg == 0)
 		{
-			pid = waitpid(-1, &status, WNOHANG);
-			if(pid == -1) break;
+			while (1)
+			{
+				pid = waitpid(-1, &status, WNOHANG|WUNTRACED);
+				if(pid == -1) break;
+			}
 		}
 	}
 }

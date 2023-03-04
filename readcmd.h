@@ -12,6 +12,7 @@ struct cmdline *readcmd(void);
 
 /* Structure returned by readcmd() */
 struct cmdline {
+	int isBg; //1 for the command background, 0 for the command not background 
 	char *err;	/* If not null, it is an error message that should be
 			   displayed. The other fields are null. */
 	char *in;	/* If not null : name of file for input redirection. */

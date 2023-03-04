@@ -95,6 +95,10 @@ static char **split_in_words(char *line)
 			w = "|";
 			cur++;
 			break;
+		case '&':
+			w = "&";
+			cur++;
+			break;
 		default:
 			/* Another word */
 			start = cur;
@@ -107,6 +111,7 @@ static char **split_in_words(char *line)
 				case '<':
 				case '>':
 				case '|':
+				case '&':
 					c = 0;
 					break;
 				default: ;
@@ -189,6 +194,7 @@ struct cmdline *readcmd(void)
 	s->in = 0;
 	s->out = 0;
 	s->seq = 0;
+	s->isBg = 0;
 
 	i = 0;
 	while ((w = words[i++]) != 0) {
@@ -223,7 +229,7 @@ struct cmdline *readcmd(void)
 				s->err = "misplaced pipe";
 				goto error;
 			}
-
+			
 			seq = xrealloc(seq, (seq_len + 2) * sizeof(char **));
 			seq[seq_len++] = cmd;
 			seq[seq_len] = 0;
@@ -231,6 +237,18 @@ struct cmdline *readcmd(void)
 			cmd = xmalloc(sizeof(char *));
 			cmd[0] = 0;
 			cmd_len = 0;
+			break;
+		case '&':
+			/* Tricky : the word can only be "&" */
+			if(words[i] == 0)
+			{
+				s->isBg = 1;
+			}
+			else
+			{
+				s->err = "& is not the last symbol";
+				goto error;
+			}
 			break;
 		default:
 			cmd = xrealloc(cmd, (cmd_len + 2) * sizeof(char *));
@@ -258,6 +276,7 @@ error:
 		case '<':
 		case '>':
 		case '|':
+		case '&':
 			break;
 		default:
 			free(w);
