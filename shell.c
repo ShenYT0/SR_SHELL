@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "readcmd.h"
 #include "csapp.h"
-/*
+
 void handler(int sig) //SIGINT handler
 {
     pid_t pid;
@@ -17,7 +17,7 @@ void handler(int sig) //SIGINT handler
         if(pid == -1) break;
     }
 }
-*/
+
 void handlerC(int sig)
 {
 	printf("\n");
@@ -37,7 +37,7 @@ void handlerZ(int sig)
 
 int main()
 {
-	//Signal(SIGCHLD, handler);
+	Signal(SIGCHLD, handler);
 	Signal(SIGINT, handlerC); // ctrl C
 	Signal(SIGTSTP, handlerZ); // ctrl Z
 
@@ -63,10 +63,12 @@ int main()
 			continue;
 		}
 
+		/*
 		if(l->isBg) 
 		{
 			printf("background command\n");
 		}
+		*/
 
 		/*
 		if (l->in) printf("in: %s\n", l->in);
@@ -74,7 +76,7 @@ int main()
 		*/
 
 		/* Display each command of the pipe */
-		
+		/*
 		for (i=0; l->seq[i]!=0; i++) {
 			char **cmd = l->seq[i];
 			printf("seq[%d]: ", i);
@@ -83,7 +85,7 @@ int main()
 			}
 			printf("\n");
 		}
-		
+		*/
 
 		int tube[100][2]; // multitube
 		for ( i = 0; l->seq[i+1]!=0; i++)
